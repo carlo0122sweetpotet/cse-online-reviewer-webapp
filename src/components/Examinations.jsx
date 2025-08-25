@@ -9,7 +9,6 @@ const Examinations = ({ user, userData, onExamCompleted }) => {
     const [selectedExam, setSelectedExam] = useState(null);
     const [examinations, setExaminations] = useState({});
     const [loading, setLoading] = useState(true);
-    // Move these state declarations to the top level
     const [currentQuestion, setCurrentQuestion] = useState(0);
     const [selectedAnswers, setSelectedAnswers] = useState({});
     const [showResults, setShowResults] = useState(false);
@@ -115,7 +114,7 @@ const Examinations = ({ user, userData, onExamCompleted }) => {
                             title: 'Idiomatic Expression and Correct Spelling',
                             description: 'This section focuses on developing language proficiency through the proper use of idiomatic expressions and accurate spelling',
                             duration: 'unlimited',
-                            questions: 10,
+                            questions: 50,
                             difficulty: 'Professional Level'
                         }
                     ],
