@@ -70,6 +70,55 @@ export const examQuestions = {
           options: ["scarce", "plentiful", "limited", "moderate"],
           correctAnswer: 1,
           explanation: "'Plentiful' means existing in large quantity, which is the same as 'abundant'."
+        },
+        {
+          id: 3,
+          question: "There are no effective boundaries when it comes to pollutants. Studies have shown that toxic insecticides that have been banned in many countries are riding the wind from countries where they remain legal. Compounds such as DDT and toxaphene have been found in remote places like the Yukon and other Arctic regions. This paragraph best supports the statement that",
+          options: ["toxic insecticides such as DDT have not been banned throughout the world", "more pollutants find their way into polar climates than they do into warmer areas", "studies have proven that many countries have ignored their own anti-pollution laws", "DDT and toxaphene are the two most toxix insecticides in the world"],
+          correctAnswer: 0,
+          explanation: ""
+        },
+        {
+          id: 4,
+          question: "Most researchers in needy countries are based on the thinking and approach of the highly developed Western world, and seldom have they been directed toward meeting the countries; own development needs. The sentence best supports the statement that",
+          options: ["highly developed countries offer the best guide for the development of needy countries", "most researchers done in needy countries are missing their objectives", "most researchers have universal application", "needy countries need researchers to help them reach the status of the western world", "needy countries spend so much time for conducting researchers"],
+          correctAnswer: 3,
+          explanation: ""
+        },
+        {
+          id: 5,
+          question: "Critical reading is a demanding process. To read critically, you must slow down your reading and, with pencil in hand, perform specific operations on the text. Mark up the text with your reactions, conclusions, and questions. When you read, become an active participant. This paragraph best supports the statement that",
+          options: ["critical reading is a slow, dull, but essential process", "the best critical reading happens at critical times in a person's life", "readers should get in the habit of questioning the truth of what they read", "critical reading requires thoughtful and careful attention", "critical reading should take place at the same time each day"],
+          correctAnswer: 3,
+          explanation: ""
+        },
+        {
+          id: 6,
+          question: "Two person look out through the same bars; one sees mud and the other, the stars. The sentence best supports the statement that",
+          options: ["some people are more blind than others", "people see things differently depending on their own perspective", "people have varied ways of looking at different things", "people have different tastes and interests", "people tend to influence one another's views of things"],
+          correctAnswer: 2,
+          explanation: ""
+        },
+        {
+          id: 7,
+          question: "Nagawang mabago ng mga kasalukuyang awitin ang kamalayan ng Pilipino upang kantahin ang sarili niyang mga awit sa tanging wikang nakapagsasastinig sa kanyang kaluluwa. Isinasaad ng pangungusap na",
+          options: ["madamdamin at makabuluhan ang mga awiting isinulat sa wikang Pilipino", "tagumpay ang mga awiting Pilipino na mabago ang kaugalian ng mga tao Pilipino", "madaling matutuhan ang mga awiting Pilipino dahil ang mga ito ay nasusulat sa katutubong wika", "natutuhan nang tangkilikin ng mga Pilipino ang kanilang mga sariling awitin", "nagkakaroon na ng kamalayan ang mga Pilipino tungkol sa lahat ng mga awitin ngayon"],
+          correctAnswer: 3,
+          explanation: ""
+        },
+        {
+          id: 8,
+          question: "Sixty years ago I know everthing; now I know nothing; education is a progressive discovery of our own ignorance. The sentence best supports the statement that",
+          options: ["the older we get, the more we forget what we have learned", "the older we get, the more knowledgeable we become", "the more we learn, the more we realize that there's more we need to know", "we learn more as we grow old", "ignorance is a lifelong experience"],
+          correctAnswer: 0,
+          explanation: ""
+        },
+        {
+          id: 9,
+          question: "In a modern economy, the results of long-range planning frequently depend upon the future value of money. The ability then to predict the value of money is a key to economic progress. The paragraph best supports the statement that",
+          options: ["the value of money is unpredictable at times", "the unpredictability of money is an obstacle to a nation's prosperity", "economic progress is facilitated by properly controlling budgetary expenses", "long-range planning is unheard of in traditional economies", "financial planning is indispensable in modern economy"],
+          correctAnswer: 1,
+          explanation: ""
         }
       ]
     },
@@ -684,6 +733,286 @@ export const examQuestions = {
           options: ["satisfactory", "longed", "important", "legible", "ready"],
           correctAnswer: 1,
           explanation: "When someone says “This report leaves much to be desired,” the implied answer is that the report is “longed for improvement” or “longed to be better.”s"
+        },
+        {
+          id: 11,
+          question: "What does the idiom 'hit the sack' mean?",
+          options: ["To go to sleep", "To start a fight", "To quit a job", "To lose money", "To work hard"],
+          correctAnswer: 0,
+          explanation: "'Hit the sack' is an informal idiom meaning to go to bed or sleep."
+        },
+        {
+          id: 12,
+          question: "Which of the following is spelled correctly?",
+          options: ["Consciense", "Conscience", "Consciensce", "Conciense", "Consciense"],
+          correctAnswer: 1,
+          explanation: "'Conscience' is the correct spelling, meaning an inner sense of right and wrong."
+        },
+        {
+          id: 13,
+          question: "What does the idiom 'burn the midnight oil' mean?",
+          options: ["To waste time", "To stay up late working or studying", "To spend too much money", "To relax after work", "To argue with someone"],
+          correctAnswer: 1,
+          explanation: "'Burn the midnight oil' means to stay up late at night, usually to study or work."
+        },
+        {
+          id: 14,
+          question: "Choose the correctly spelled word:",
+          options: ["Mischevious", "Mischievous", "Mischievious", "Mischivous", "Mischivious"],
+          correctAnswer: 1,
+          explanation: "The correct spelling is 'Mischievous', meaning playful in a teasing or troublesome way."
+        },
+        {
+          id: 15,
+          question: "What does the idiom 'throw in the towel' mean?",
+          options: ["To surrender or give up", "To fight harder", "To clean up a mess", "To waste effort", "To change plans suddenly"],
+          correctAnswer: 0,
+          explanation: "'Throw in the towel' means to give up or surrender, originally from boxing."
+        },
+        {
+          id: 16,
+          question: "Which of the following is spelled correctly?",
+          options: ["Indispensible", "Indespensible", "Indispensable", "Indespansable", "Indispansable"],
+          correctAnswer: 2,
+          explanation: "'Indispensable' is the correct spelling, meaning absolutely necessary."
+        },
+        {
+          id: 17,
+          question: "What does the idiom 'cut to the chase' mean?",
+          options: ["To get straight to the point", "To run away quickly", "To avoid responsibility", "To finish something slowly", "To argue endlessly"],
+          correctAnswer: 0,
+          explanation: "'Cut to the chase' means to get directly to the important part without wasting time."
+        },
+        {
+          id: 18,
+          question: "Which of the following is spelled correctly?",
+          options: ["Embarrasment", "Embarasment", "Embarrassment", "Embarassment", "Embarresment"],
+          correctAnswer: 2,
+          explanation: "The correct spelling is 'Embarrassment' with double 'r' and double 's'."
+        },
+        {
+          id: 19,
+          question: "What does the idiom 'beat around the bush' mean?",
+          options: ["To avoid the main topic", "To hunt in the forest", "To damage plants", "To prepare for farming", "To hide from someone"],
+          correctAnswer: 0,
+          explanation: "'Beat around the bush' means to avoid talking about the main issue directly."
+        },
+        {
+          id: 20,
+          question: "Instead of being direct, Maria tends to beat around the bush whenever serious topics are discussed. What does 'beat around the bush' mean?",
+          options: ["To avoid the main topic", "To hunt in the forest", "To damage plants", "To prepare for farming", "To hide from someone"],
+          correctAnswer: 0,
+          explanation: "'Beat around the bush' means to avoid talking about the main issue directly."
+        },
+        {
+          id: 21,
+          question: "Rico only visits his relatives once in a blue moon. What does 'once in a blue moon' mean?",
+          options: ["Something that never happens", "Something that happens very rarely", "Something that happens every day", "Something that is impossible", "Something that happens yearly"],
+          correctAnswer: 1,
+          explanation: "'Once in a blue moon' means something that happens very rarely."
+        },
+        {
+          id: 22,
+          question: "After the discussion, the ball is in your court now. What does 'the ball is in your court' mean?",
+          options: ["You must decide what happens next", "You have to play fairly", "You must share responsibility", "You have an advantage in a game", "You should apologize first"],
+          correctAnswer: 0,
+          explanation: "'The ball is in your court' means it’s your turn to take action or make a decision."
+        },
+        {
+          id: 23,
+          question: "Knowing he could no longer delay the surgery, the patient decided to bite the bullet. What does 'bite the bullet' mean?",
+          options: ["To face a painful or difficult situation bravely", "To speak harshly", "To hurt someone intentionally", "To accept defeat", "To stay silent"],
+          correctAnswer: 0,
+          explanation: "'Bite the bullet' means to bravely accept something unpleasant or difficult."
+        },
+        {
+          id: 24,
+          question: "When the politician became popular, many people quickly jumped on the bandwagon. What does 'jump on the bandwagon' mean?",
+          options: ["To join others in doing something popular", "To leave a group suddenly", "To criticize unfairly", "To act without thinking", "To support a rival team"],
+          correctAnswer: 0,
+          explanation: "'Jump on the bandwagon' means to join something once it becomes popular or successful."
+        },
+        {
+          id: 25,
+          question: "There’s no use crying over spilled milk after you missed the deadline. What does 'cry over spilled milk' mean?",
+          options: ["To regret something that cannot be undone", "To waste food unnecessarily", "To complain about small matters", "To feel sympathy for others", "To ask for forgiveness"],
+          correctAnswer: 0,
+          explanation: "'Cry over spilled milk' means to be upset over something that has already happened and cannot be changed."
+        },
+        {
+          id: 26,
+          question: "The exhausted students decided to hit the sack after studying all night. What does 'hit the sack' mean?",
+          options: ["To go to sleep", "To start a fight", "To quit a job", "To lose money", "To work hard"],
+          correctAnswer: 0,
+          explanation: "'Hit the sack' means to go to bed or sleep."
+        },
+        {
+          id: 27,
+          question: "Despite many difficulties, the team managed to weather the storm. What does 'weather the storm' mean?",
+          options: ["Wait for rain to stop", "Go sailing in a storm", "Survive difficulties", "Predict the weather", "Stay indoors during typhoon"],
+          correctAnswer: 2,
+          explanation: "'Weather the storm' means to survive or endure difficulties."
+        },
+        {
+          id: 28,
+          question: "Realizing that their plan had failed, the group decided to throw in the towel. What does 'throw in the towel' mean?",
+          options: ["To surrender or give up", "To fight harder", "To clean up a mess", "To waste effort", "To change plans suddenly"],
+          correctAnswer: 0,
+          explanation: "'Throw in the towel' means to give up or surrender, originally from boxing."
+        },
+        {
+          id: 29,
+          question: "The professor told the students to cut to the chase and focus on the key points. What does 'cut to the chase' mean?",
+          options: ["To get straight to the point", "To run away quickly", "To avoid responsibility", "To finish something slowly", "To argue endlessly"],
+          correctAnswer: 0,
+          explanation: "'Cut to the chase' means to get directly to the important part without wasting time."
+        },
+        {
+          id: 30,
+          question: "The new employee quickly learned to paddle his own canoe at the workplace. What does 'paddle your own canoe' mean?",
+          options: ["To rely on yourself", "To enjoy outdoor activities", "To learn slowly", "To complain often", "To travel frequently"],
+          correctAnswer: 0,
+          explanation: "'Paddle your own canoe' means to be independent and self-reliant."
+        },
+        {
+          id: 31,
+          question: "When Jose finally found his long-lost friend, he realized he had found his Achilles’ heel. What does 'Achilles’ heel' mean?",
+          options: ["A source of great strength", "A hidden talent", "A weakness or vulnerability", "A great achievement", "A sudden fortune"],
+          correctAnswer: 2,
+          explanation: "'Achilles’ heel' refers to a weakness or vulnerable point in someone’s character or situation."
+        },
+        {
+          id: 32,
+          question: "The manager told the employees not to make a mountain out of a molehill. What does 'make a mountain out of a molehill' mean?",
+          options: ["To exaggerate a small problem", "To solve a big problem", "To climb a mountain", "To ignore an issue", "To create an obstacle"],
+          correctAnswer: 0,
+          explanation: "'Make a mountain out of a molehill' means to exaggerate or overreact to a minor issue."
+        },
+        {
+          id: 33,
+          question: "After many years of rivalry, the two companies decided to bury the hatchet. What does 'bury the hatchet' mean?",
+          options: ["To hide weapons", "To start a new project", "To end a conflict and make peace", "To delay a decision", "To compete more fiercely"],
+          correctAnswer: 2,
+          explanation: "'Bury the hatchet' means to reconcile or end a conflict."
+        },
+        {
+          id: 34,
+          question: "She always lets the cat out of the bag whenever there’s a surprise planned. What does 'let the cat out of the bag' mean?",
+          options: ["To release an animal", "To reveal a secret unintentionally", "To create a problem", "To lose a valuable item", "To ask for help"],
+          correctAnswer: 1,
+          explanation: "'Let the cat out of the bag' means to reveal a secret, often by accident."
+        },
+        {
+          id: 35,
+          question: "Despite the pressure, the lawyer kept his cards close to his chest during negotiations. What does 'keep your cards close to your chest' mean?",
+          options: ["To gamble recklessly", "To hide your plans or intentions", "To speak honestly", "To play fairly", "To reveal all details"],
+          correctAnswer: 1,
+          explanation: "'Keep your cards close to your chest' means to keep your plans, ideas, or intentions secret."
+        },
+        {
+          id: 36,
+          question: "The teacher told Ana to put her best foot forward in the competition. What does 'put your best foot forward' mean?",
+          options: ["To walk carefully", "To make a good impression", "To move quickly", "To give up early", "To try to escape"],
+          correctAnswer: 1,
+          explanation: "'Put your best foot forward' means to try your best and make a good impression."
+        },
+        {
+          id: 37,
+          question: "When asked about the incident, the official said he would cross the bridge when he got to it. What does 'cross the bridge when you come to it' mean?",
+          options: ["To plan ahead carefully", "To avoid responsibility", "To deal with problems only when they arise", "To ignore the situation", "To postpone success"],
+          correctAnswer: 2,
+          explanation: "'Cross the bridge when you come to it' means to deal with a problem only when it actually happens."
+        },
+        {
+          id: 38,
+          question: "The businessman was walking on thin ice after breaking the company’s rules. What does 'walking on thin ice' mean?",
+          options: ["Being in a risky or dangerous situation", "Walking very carefully", "Being successful", "Being cautious", "Losing balance"],
+          correctAnswer: 0,
+          explanation: "'Walking on thin ice' means being in a risky or dangerous situation where one mistake could lead to trouble."
+        },
+        {
+          id: 39,
+          question: "The journalist called a spade a spade during the heated debate. What does 'call a spade a spade' mean?",
+          options: ["To speak honestly and directly", "To insult someone", "To remain silent", "To exaggerate facts", "To use polite words"],
+          correctAnswer: 0,
+          explanation: "'Call a spade a spade' means to speak the truth directly, even if it is unpleasant."
+        },
+        {
+          id: 40,
+          question: "Even if the plan failed, the leader reminded everyone that every cloud has a silver lining. What does 'every cloud has a silver lining' mean?",
+          options: ["Every situation has both pros and cons", "There is something good even in a bad situation", "Rainy days are useful for farmers", "A person should always be optimistic", "Every failure is permanent"],
+          correctAnswer: 1,
+          explanation: "'Every cloud has a silver lining' means that something good can be found in every bad situation."
+        },
+        {
+          id: 41,
+          question: "After losing his job, Marco decided to turn over a new leaf and start fresh. What does 'turn over a new leaf' mean?",
+          options: ["To read a new book", "To move to another city", "To change behavior for the better", "To start a business", "To abandon responsibilities"],
+          correctAnswer: 2,
+          explanation: "'Turn over a new leaf' means to change one’s behavior for the better."
+        },
+        {
+          id: 42,
+          question: "Despite the controversy, the senator decided to stick to his guns. What does 'stick to your guns' mean?",
+          options: ["To carry a weapon", "To stand firm in one’s decision", "To prepare for battle", "To remain silent", "To escape responsibility"],
+          correctAnswer: 1,
+          explanation: "'Stick to your guns' means to remain firm in one’s position or belief despite opposition."
+        },
+        {
+          id: 43,
+          question: "The businessman was caught red-handed accepting a bribe. What does 'caught red-handed' mean?",
+          options: ["To be caught injured", "To be caught in the act of doing something wrong", "To be caught in public", "To be embarrassed", "To be falsely accused"],
+          correctAnswer: 1,
+          explanation: "'Caught red-handed' means to be caught in the act of doing something illegal or wrong."
+        },
+        {
+          id: 44,
+          question: "The detective said the missing piece of evidence was the smoking gun in the case. What does 'smoking gun' mean?",
+          options: ["A weapon used in a crime", "An obvious clue or proof of guilt", "A dangerous situation", "A misleading sign", "An old story"],
+          correctAnswer: 1,
+          explanation: "'Smoking gun' means a piece of evidence that serves as undeniable proof of guilt."
+        },
+        {
+          id: 45,
+          question: "Maria’s sudden resignation was just the tip of the iceberg. What does 'the tip of the iceberg' mean?",
+          options: ["The best part of something", "The smallest visible part of a bigger problem", "The final solution", "The easiest challenge", "The end of an issue"],
+          correctAnswer: 1,
+          explanation: "'Tip of the iceberg' means a small, visible part of a much larger hidden issue."
+        },
+        {
+          id: 46,
+          question: "When Pedro was promoted, his colleagues gave him the cold shoulder. What does 'give the cold shoulder' mean?",
+          options: ["To ignore someone deliberately", "To congratulate warmly", "To criticize publicly", "To offer support", "To dismiss someone politely"],
+          correctAnswer: 0,
+          explanation: "'Give the cold shoulder' means to deliberately ignore or reject someone."
+        },
+        {
+          id: 47,
+          question: "The lawyer’s argument was weak, so the judge took it with a grain of salt. What does 'take with a grain of salt' mean?",
+          options: ["To believe completely", "To doubt or view something with skepticism", "To ignore respectfully", "To criticize harshly", "To accept wholeheartedly"],
+          correctAnswer: 1,
+          explanation: "'Take with a grain of salt' means to regard something as not completely reliable or to be skeptical about it."
+        },
+        {
+          id: 48,
+          question: "When the company failed, the workers were left high and dry. What does 'left high and dry' mean?",
+          options: ["To be left without help or resources", "To be left in a safe place", "To be abandoned in the desert", "To be rewarded unexpectedly", "To be confused about choices"],
+          correctAnswer: 0,
+          explanation: "'Left high and dry' means to be abandoned without help or resources."
+        },
+        {
+          id: 49,
+          question: "Carla finally decided to face the music after missing work for a week. What does 'face the music' mean?",
+          options: ["To listen to a concert", "To accept the unpleasant consequences of one’s actions", "To avoid punishment", "To explain calmly", "To entertain others"],
+          correctAnswer: 1,
+          explanation: "'Face the music' means to accept the negative consequences of one’s actions."
+        },
+        {
+          id: 50,
+          question: "Despite his opponent’s harsh words, Ramon kept his cool and did not retaliate. What does 'keep your cool' mean?",
+          options: ["To avoid heat", "To stay calm under pressure", "To remain distant", "To act indifferent", "To hide emotions completely"],
+          correctAnswer: 1,
+          explanation: "'Keep your cool' means to stay calm and composed, especially in a difficult situation."
         }
       ]
     }
