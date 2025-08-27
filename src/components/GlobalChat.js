@@ -259,6 +259,7 @@ const GlobalChat = ({ user, userData, isAdminView = false }) => {
             </div>
 
             {/* Messages Container */}
+            {/* Messages Container */}
             <div className="flex-1 overflow-y-auto p-4 space-y-4">
                 {messages.length === 0 ? (
                     <div className="text-center text-gray-500 mt-8">
@@ -284,16 +285,16 @@ const GlobalChat = ({ user, userData, isAdminView = false }) => {
 
                                 {/* Message */}
                                 <div className={`flex ${isCurrentUser ? 'justify-end' : 'justify-start'}`}>
-                                    <div className={`flex max-w-xs lg:max-w-md ${isCurrentUser ? 'flex-row-reverse' : 'flex-row'} items-end space-x-2`}>
-                                        {/* Avatar */}
+                                    <div className={`flex items-start space-x-3 max-w-[85%] sm:max-w-[75%] lg:max-w-md ${isCurrentUser ? 'flex-row-reverse space-x-reverse' : 'flex-row'}`}>
+                                        {/* Avatar - Only show for other users */}
                                         {!isCurrentUser && (
-                                            <div className={`w-8 h-8 rounded-full flex items-center justify-center text-white text-sm font-medium ${getAvatarColor(message.sender?.uid, message.sender?.role)}`}>
+                                            <div className={`w-8 h-8 rounded-full flex items-center justify-center text-white text-sm font-medium flex-shrink-0 mt-1 ${getAvatarColor(message.sender?.uid, message.sender?.role)}`}>
                                                 {getInitials(message.sender?.displayName)}
                                             </div>
                                         )}
 
                                         {/* Message Bubble */}
-                                        <div className={`rounded-lg px-4 py-2 ${isCurrentUser
+                                        <div className={`rounded-lg px-4 py-2 flex-1 min-w-0 ${isCurrentUser
                                             ? 'bg-indigo-600 text-white'
                                             : 'bg-gray-100 text-gray-900'
                                             }`}>
@@ -308,7 +309,7 @@ const GlobalChat = ({ user, userData, isAdminView = false }) => {
                                                     )}
                                                 </p>
                                             )}
-                                            <p className="text-sm">{message.text}</p>
+                                            <p className="text-sm break-words">{message.text}</p>
                                             <p className={`text-xs mt-1 ${isCurrentUser ? 'text-indigo-200' : 'text-gray-500'
                                                 }`}>
                                                 {formatTime(message.timestamp)}
