@@ -83,7 +83,71 @@ const Leaderboards = ({ user }) => {
     };
 
     useEffect(() => {
-        fetchLeaderboardData();
+        const fetchData = async () => {
+            setLeaderboardLoading(true);
+            setError(null);
+
+            try {
+                // Check if user is authenticated first
+                if (!user?.uid) {
+                    throw new Error('User not authenticated');
+                }
+
+                console.log('Fetching leaderboard data from users collection...');
+                const usersRef = collection(db, 'users');
+                const usersSnapshot = await getDocs(usersRef);
+
+                console.log('Users snapshot size:', usersSnapshot.size);
+
+                const allUsers = [];
+                usersSnapshot.forEach((doc) => {
+                    const userData = doc.data();
+                    const examResults = userData.examResults || [];
+
+                    // Only include users who have taken at least one exam
+                    if (examResults.length > 0) {
+                        // Calculate statistics from exam results
+                        const totalExams = examResults.length;
+                        const totalScore = examResults.reduce((sum, result) => sum + (result.score || 0), 0);
+                        const averageScore = Math.round(totalScore / totalExams);
+                        const bestScore = Math.max(...examResults.map(result => result.score || 0));
+
+                        // Find most recent exam date
+                        const lastExamDate = examResults.reduce((latest, result) => {
+                            const resultDate = result.completedAt?.toDate ? result.completedAt.toDate() : new Date(result.completedAt || 0);
+                            const latestDate = latest?.toDate ? latest.toDate() : new Date(latest || 0);
+                            return resultDate > latestDate ? result.completedAt : latest;
+                        }, null);
+
+                        allUsers.push({
+                            id: doc.id,
+                            displayName: userData.displayName || 'Unknown User',
+                            averageScore: averageScore,
+                            bestScore: bestScore,
+                            totalExams: totalExams,
+                            lastExamDate: lastExamDate
+                        });
+                    }
+                });
+
+                // Sort by average score (descending), then by best score, then by total exams
+                allUsers.sort((a, b) => {
+                    if (b.averageScore !== a.averageScore) return b.averageScore - a.averageScore;
+                    if (b.bestScore !== a.bestScore) return b.bestScore - a.bestScore;
+                    return b.totalExams - a.totalExams;
+                });
+
+                console.log('Final leaderboard data:', allUsers);
+                setLeaderboardData(allUsers);
+            } catch (error) {
+                console.error('Error fetching leaderboard data:', error);
+                setError(error.message);
+            } finally {
+                setLeaderboardLoading(false);
+            }
+        };
+
+        fetchData();
     }, [user]);
 
     const currentUserRank = leaderboardData.findIndex(userData => userData.id === user?.uid) + 1;
@@ -308,36 +372,6 @@ const Leaderboards = ({ user }) => {
                             ))}
                         </tbody>
                     </table>
-                </div>
-            )}
-
-            {/* Statistics */}
-            {leaderboardData.length > 0 && (
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                    <div className="bg-white p-4 rounded-lg border border-gray-200 shadow-sm text-center">
-                        <div className="text-2xl font-bold text-indigo-600 mb-1">
-                            {leaderboardData.length}
-                        </div>
-                        <div className="text-sm text-gray-600">Active Users</div>
-                    </div>
-                    <div className="bg-white p-4 rounded-lg border border-gray-200 shadow-sm text-center">
-                        <div className="text-2xl font-bold text-green-600 mb-1">
-                            {Math.round(leaderboardData.reduce((sum, user) => sum + user.averageScore, 0) / leaderboardData.length)}%
-                        </div>
-                        <div className="text-sm text-gray-600">Global Average</div>
-                    </div>
-                    <div className="bg-white p-4 rounded-lg border border-gray-200 shadow-sm text-center">
-                        <div className="text-2xl font-bold text-yellow-600 mb-1">
-                            {Math.max(...leaderboardData.map(user => user.bestScore))}%
-                        </div>
-                        <div className="text-sm text-gray-600">Highest Score</div>
-                    </div>
-                    <div className="bg-white p-4 rounded-lg border border-gray-200 shadow-sm text-center">
-                        <div className="text-2xl font-bold text-purple-600 mb-1">
-                            {leaderboardData.reduce((sum, user) => sum + user.totalExams, 0)}
-                        </div>
-                        <div className="text-sm text-gray-600">Total Exams</div>
-                    </div>
                 </div>
             )}
         </div>
