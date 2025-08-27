@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import GlobalChat from './GlobalChat';
 import Examinations from './Examinations';
+import Leaderboards from './Leaderboards';
 import {
   User,
   Settings,
@@ -17,7 +18,8 @@ import {
   MessageCircle,
   Lock,
   BookOpen,
-  Award
+  Award,
+  Trophy
 } from 'lucide-react';
 import { signOut, updatePassword, EmailAuthProvider, reauthenticateWithCredential } from 'firebase/auth';
 import { auth, db } from '../firebase';
@@ -46,6 +48,9 @@ const UserDashboard = ({ user }) => {
   const [selectedNotification, setSelectedNotification] = useState(null);
   const [examResults, setExamResults] = useState([]);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
+  const [sortBy, setSortBy] = useState('date'); // 'date', 'score', 'title', 'category'
+  const [sortOrder, setSortOrder] = useState('desc'); // 'asc', 'desc'
+  const [filterCategory, setFilterCategory] = useState('all');
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -147,6 +152,45 @@ const UserDashboard = ({ user }) => {
     if (activityPage > 0) {
       setActivityPage(activityPage - 1);
     }
+  };
+
+  const sortExamResults = (results) => {
+    const sorted = [...results].sort((a, b) => {
+      let comparison = 0;
+
+      switch (sortBy) {
+        case 'date':
+          const dateA = a.completedAt?.toDate ? a.completedAt.toDate() : new Date(a.completedAt || 0);
+          const dateB = b.completedAt?.toDate ? b.completedAt.toDate() : new Date(b.completedAt || 0);
+          comparison = dateB - dateA;
+          break;
+        case 'score':
+          comparison = b.score - a.score;
+          break;
+        case 'title':
+          comparison = a.examTitle.localeCompare(b.examTitle);
+          break;
+        case 'category':
+          comparison = a.category.localeCompare(b.category);
+          break;
+        default:
+          comparison = 0;
+      }
+
+      return sortOrder === 'desc' ? comparison : -comparison;
+    });
+
+    // Apply category filter
+    if (filterCategory !== 'all') {
+      return sorted.filter(result => result.category === filterCategory);
+    }
+
+    return sorted;
+  };
+
+  const getUniqueCategories = () => {
+    const categories = [...new Set(examResults.map(result => result.category))];
+    return categories.sort();
   };
 
   const refreshRecentActivity = async () => {
@@ -558,71 +602,275 @@ const UserDashboard = ({ user }) => {
     </div>
   );
 
-  const renderResults = () => (
-    <div className="space-y-6">
-      <div className="bg-gradient-to-r from-yellow-500 to-orange-600 rounded-xl p-6 text-white">
-        <h2 className="text-xl font-semibold mb-2">Exam Results</h2>
-        <p className="opacity-90">View your examination performance history</p>
-      </div>
+  const renderResults = () => {
+    const sortedAndFilteredResults = sortExamResults(examResults);
+    const categories = getUniqueCategories();
 
-      <div className="bg-white rounded-lg border border-gray-200">
-        <div className="p-6 border-b border-gray-200">
-          <h3 className="text-lg font-semibold text-gray-900">All Exam Results</h3>
+    return (
+      <div className="space-y-6">
+        <div className="bg-gradient-to-r from-yellow-500 to-orange-600 rounded-xl p-6 text-white">
+          <h2 className="text-xl font-semibold mb-2">Exam Results</h2>
+          <p className="opacity-90">View your examination performance history</p>
         </div>
 
-        <div className="max-h-96 overflow-y-auto">
-          <div className="divide-y divide-gray-200">
-            {examResults.map((result, index) => (
-              <div key={result.id || index} className="p-6">
-                <div className="flex items-center justify-between">
-                  <div className="flex-1">
-                    <div className="flex items-center space-x-3 mb-2">
-                      <h4 className="text-lg font-semibold text-gray-900">{result.examTitle}</h4>
-                      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${result.score >= 80 ? 'bg-green-100 text-green-800' :
-                        result.score >= 60 ? 'bg-yellow-100 text-yellow-800' :
-                          'bg-red-100 text-red-800'
-                        }`}>
-                        {result.score >= 80 ? 'Excellent' : result.score >= 60 ? 'Good' : 'Needs Improvement'}
-                      </span>
-                    </div>
+        {/* Statistics Cards */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div className="bg-white p-4 rounded-lg border border-gray-200 shadow-sm">
+            <div className="flex items-center space-x-2 mb-2">
+              <Award className="w-5 h-5 text-blue-600" />
+              <span className="text-sm font-medium text-gray-600">Total Exams</span>
+            </div>
+            <p className="text-2xl font-bold text-gray-800">{examResults.length}</p>
+          </div>
 
-                    <p className="text-gray-600 mb-2 capitalize">{result.category} Category</p>
+          <div className="bg-white p-4 rounded-lg border border-gray-200 shadow-sm">
+            <div className="flex items-center space-x-2 mb-2">
+              <CheckCircle className="w-5 h-5 text-green-600" />
+              <span className="text-sm font-medium text-gray-600">Average Score</span>
+            </div>
+            <p className="text-2xl font-bold text-green-600">
+              {examResults.length > 0
+                ? Math.round(examResults.reduce((sum, result) => sum + result.score, 0) / examResults.length)
+                : 0}%
+            </p>
+          </div>
 
-                    <div className="flex items-center space-x-6 text-sm text-gray-500">
-                      <span>Completed: {result.completedAt ? formatDate(result.completedAt) : 'Unknown'}</span>
-                      <span>Questions: {result.correctAnswers}/{result.totalQuestions}</span>
-                    </div>
-                  </div>
+          <div className="bg-white p-4 rounded-lg border border-gray-200 shadow-sm">
+            <div className="flex items-center space-x-2 mb-2">
+              <Award className="w-5 h-5 text-yellow-600" />
+              <span className="text-sm font-medium text-gray-600">Best Score</span>
+            </div>
+            <p className="text-2xl font-bold text-yellow-600">
+              {examResults.length > 0 ? Math.max(...examResults.map(r => r.score)) : 0}%
+            </p>
+          </div>
 
-                  <div className="text-right">
-                    <div className={`text-3xl font-bold ${result.score >= 80 ? 'text-green-600' :
-                      result.score >= 60 ? 'text-yellow-600' : 'text-red-600'
-                      }`}>
-                      {result.score}%
+          <div className="bg-white p-4 rounded-lg border border-gray-200 shadow-sm">
+            <div className="flex items-center space-x-2 mb-2">
+              <BookOpen className="w-5 h-5 text-purple-600" />
+              <span className="text-sm font-medium text-gray-600">Categories</span>
+            </div>
+            <p className="text-2xl font-bold text-purple-600">{categories.length}</p>
+          </div>
+        </div>
+
+        <div className="bg-white rounded-lg border border-gray-200">
+          {/* Header with Controls */}
+          <div className="p-6 border-b border-gray-200">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+              <h3 className="text-lg font-semibold text-gray-900">All Exam Results</h3>
+
+              <div className="flex flex-col sm:flex-row gap-3">
+                {/* Category Filter */}
+                <select
+                  value={filterCategory}
+                  onChange={(e) => setFilterCategory(e.target.value)}
+                  className="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                >
+                  <option value="all">All Categories</option>
+                  {categories.map(category => (
+                    <option key={category} value={category} className="capitalize">
+                      {category}
+                    </option>
+                  ))}
+                </select>
+
+                {/* Sort Controls */}
+                <div className="flex gap-2">
+                  <select
+                    value={sortBy}
+                    onChange={(e) => setSortBy(e.target.value)}
+                    className="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                  >
+                    <option value="date">Sort by Date</option>
+                    <option value="score">Sort by Score</option>
+                    <option value="title">Sort by Title</option>
+                    <option value="category">Sort by Category</option>
+                  </select>
+
+                  <button
+                    onClick={() => setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc')}
+                    className="px-3 py-2 border border-gray-300 rounded-lg text-sm hover:bg-gray-50 focus:ring-2 focus:ring-indigo-500"
+                    title={`Currently ${sortOrder === 'desc' ? 'Descending' : 'Ascending'}`}
+                  >
+                    {sortOrder === 'desc' ? '↓' : '↑'}
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="max-h-96 overflow-y-auto">
+            <div className="divide-y divide-gray-200">
+              {sortedAndFilteredResults.map((result, index) => (
+                <div key={result.id || index} className="p-6 hover:bg-gray-50 transition-colors">
+                  <div className="flex items-start justify-between">
+                    <div className="flex-1">
+                      {/* Header Row */}
+                      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-3">
+                        <div className="flex items-center space-x-3">
+                          <BookOpen className="w-5 h-5 text-blue-600 flex-shrink-0" />
+                          <h4 className="text-lg font-semibold text-gray-900">{result.examTitle}</h4>
+                        </div>
+
+                        <div className="flex items-center space-x-2 mt-2 sm:mt-0">
+                          <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${result.score >= 80 ? 'bg-green-100 text-green-800' :
+                            result.score >= 60 ? 'bg-yellow-100 text-yellow-800' :
+                              'bg-red-100 text-red-800'
+                            }`}>
+                            {result.score >= 80 ? 'Excellent' : result.score >= 60 ? 'Good' : 'Needs Improvement'}
+                          </span>
+
+                          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 capitalize">
+                            {result.category}
+                          </span>
+                        </div>
+                      </div>
+
+                      {/* Details Grid */}
+                      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
+                        <div>
+                          <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">Score</p>
+                          <p className={`text-lg font-bold ${result.score >= 80 ? 'text-green-600' :
+                            result.score >= 60 ? 'text-yellow-600' : 'text-red-600'
+                            }`}>
+                            {result.score}%
+                          </p>
+                        </div>
+
+                        <div>
+                          <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">Correct Answers</p>
+                          <p className="text-lg font-bold text-gray-800">
+                            {result.correctAnswers}/{result.totalQuestions}
+                          </p>
+                        </div>
+
+                        <div>
+                          <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">Time Spent</p>
+                          <p className="text-lg font-bold text-gray-800">
+                            {result.timeSpent ? `${Math.floor(result.timeSpent / 60)}m ${result.timeSpent % 60}s` : 'N/A'}
+                          </p>
+                        </div>
+
+                        <div>
+                          <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">Difficulty</p>
+                          <p className="text-lg font-bold text-gray-800 capitalize">
+                            {result.difficulty || 'Standard'}
+                          </p>
+                        </div>
+                      </div>
+
+                      {/* Additional Details */}
+                      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between text-sm text-gray-600">
+                        <div className="flex items-center space-x-4">
+                          <span className="flex items-center space-x-1">
+                            <Calendar className="w-4 h-4" />
+                            <span>Completed: {result.completedAt ? formatDate(result.completedAt) : 'Unknown'}</span>
+                          </span>
+
+                          {result.attempts && (
+                            <span>Attempt #{result.attempts}</span>
+                          )}
+                        </div>
+
+                        {result.passed !== undefined && (
+                          <div className="flex items-center space-x-2 mt-2 sm:mt-0">
+                            <span className={`inline-flex items-center space-x-1 ${result.passed ? 'text-green-600' : 'text-red-600'
+                              }`}>
+                              {result.passed ? <CheckCircle className="w-4 h-4" /> : <X className="w-4 h-4" />}
+                              <span className="font-medium">{result.passed ? 'Passed' : 'Failed'}</span>
+                            </span>
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Performance Bar */}
+                      <div className="mt-4">
+                        <div className="flex items-center justify-between text-sm mb-1">
+                          <span className="font-medium text-gray-700">Performance</span>
+                          <span className="text-gray-600">{result.score}% of {result.totalQuestions} questions</span>
+                        </div>
+                        <div className="w-full bg-gray-200 rounded-full h-2">
+                          <div
+                            className={`h-2 rounded-full transition-all duration-300 ${result.score >= 80 ? 'bg-green-500' :
+                              result.score >= 60 ? 'bg-yellow-500' : 'bg-red-500'
+                              }`}
+                            style={{ width: `${result.score}%` }}
+                          ></div>
+                        </div>
+                      </div>
+
+                      {/* Topics/Tags if available */}
+                      {result.topics && result.topics.length > 0 && (
+                        <div className="mt-3">
+                          <p className="text-xs font-medium text-gray-500 mb-2">Topics Covered</p>
+                          <div className="flex flex-wrap gap-1">
+                            {result.topics.map((topic, topicIndex) => (
+                              <span
+                                key={topicIndex}
+                                className="inline-flex items-center px-2 py-1 rounded-md text-xs font-medium bg-gray-100 text-gray-700"
+                              >
+                                {topic}
+                              </span>
+                            ))}
+                          </div>
+                        </div>
+                      )}
                     </div>
                   </div>
                 </div>
-              </div>
-            ))}
+              ))}
 
-            {examResults.length === 0 && (
-              <div className="p-12 text-center">
-                <Award className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-                <h3 className="text-lg font-medium text-gray-900 mb-2">No exam results yet</h3>
-                <p className="text-gray-600 mb-4">Take your first exam to see results here</p>
-                <button
-                  onClick={() => setActiveTab('examinations')}
-                  className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors"
-                >
-                  Start an Exam
-                </button>
-              </div>
-            )}
+              {sortedAndFilteredResults.length === 0 && (
+                <div className="p-12 text-center">
+                  <Award className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+                  <h3 className="text-lg font-medium text-gray-900 mb-2">
+                    {filterCategory !== 'all' ? `No results found for "${filterCategory}" category` : 'No exam results yet'}
+                  </h3>
+                  <p className="text-gray-600 mb-4">
+                    {filterCategory !== 'all'
+                      ? 'Try selecting a different category or clear the filter'
+                      : 'Take your first exam to see results here'
+                    }
+                  </p>
+                  {filterCategory !== 'all' ? (
+                    <button
+                      onClick={() => setFilterCategory('all')}
+                      className="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors"
+                    >
+                      Clear Filter
+                    </button>
+                  ) : (
+                    <button
+                      onClick={() => setActiveTab('examinations')}
+                      className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors"
+                    >
+                      Start an Exam
+                    </button>
+                  )}
+                </div>
+              )}
+            </div>
           </div>
+
+          {/* Results Summary Footer */}
+          {sortedAndFilteredResults.length > 0 && (
+            <div className="px-6 py-4 border-t border-gray-200 bg-gray-50">
+              <div className="flex items-center justify-between text-sm text-gray-600">
+                <span>
+                  Showing {sortedAndFilteredResults.length} of {examResults.length} results
+                  {filterCategory !== 'all' && ` in "${filterCategory}" category`}
+                </span>
+                <span>
+                  Average: {Math.round(sortedAndFilteredResults.reduce((sum, result) => sum + result.score, 0) / sortedAndFilteredResults.length)}%
+                </span>
+              </div>
+            </div>
+          )}
         </div>
       </div>
-    </div>
-  );
+    );
+  };
 
   const renderProfile = () => (
     <div className="space-y-6">
@@ -970,6 +1218,20 @@ const UserDashboard = ({ user }) => {
 
             <button
               onClick={() => {
+                setActiveTab('leaderboards');
+                setIsSidebarOpen(false);
+              }}
+              className={`w-full flex items-center space-x-3 px-3 py-2 rounded-lg text-left transition-colors ${activeTab === 'leaderboards'
+                ? 'bg-indigo-100 text-indigo-700'
+                : 'text-gray-600 hover:bg-gray-100'
+                }`}
+            >
+              <Trophy className="w-5 h-5" />
+              <span>Leaderboards</span>
+            </button>
+
+            <button
+              onClick={() => {
                 setActiveTab('settings');
                 setIsSidebarOpen(false);
               }}
@@ -991,6 +1253,7 @@ const UserDashboard = ({ user }) => {
             {activeTab === 'profile' && renderProfile()}
             {activeTab === 'settings' && renderSettings()}
             {activeTab === 'globalchat' && <GlobalChat user={user} userData={userData} isAdminView={false} />}
+            {activeTab === 'leaderboards' && <Leaderboards user={user} />}
             {activeTab === 'examinations' && (
               <Examinations
                 user={user}
