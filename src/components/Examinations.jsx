@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { BookOpen, Clock, Users, Award, ChevronRight, Brain, MessageSquare, Calculator, Globe, Play } from 'lucide-react';
 import { examQuestions } from './examQuestions';
 import { doc, updateDoc, arrayUnion } from 'firebase/firestore';
@@ -9,6 +9,7 @@ const Examinations = ({ user, userData, onExamCompleted }) => {
     const [selectedExam, setSelectedExam] = useState(null);
     const [examinations, setExaminations] = useState({});
     const [loading, setLoading] = useState(true);
+    // Move these state declarations to the top level
     const [currentQuestion, setCurrentQuestion] = useState(0);
     const [selectedAnswers, setSelectedAnswers] = useState({});
     const [showResults, setShowResults] = useState(false);
@@ -105,7 +106,7 @@ const Examinations = ({ user, userData, onExamCompleted }) => {
                             id: 4,
                             title: 'Vocabulary and Grammar',
                             description: 'Language proficiency assessment',
-                           duration: 'unlimited',
+                            duration: 'unlimited',
                             questions: 50,
                             difficulty: 'Professional Level'
                         },
@@ -382,18 +383,18 @@ const Examinations = ({ user, userData, onExamCompleted }) => {
         return (
             <div className="space-y-6">
                 {/* Exam Header */}
-                <div className={`bg-gradient-to-r ${category.color} rounded-xl p-6 text-white`}>
+                <div className={`sticky top-0 z-10 bg-gradient-to-r ${category.color} rounded-xl p-4 md:p-6 text-white shadow-lg`}>
                     <div className="flex items-center justify-between">
                         <div>
-                            <h2 className="text-xl font-semibold mb-1">{examData?.title}</h2>
-                            <p className="opacity-90">Question {currentQuestion + 1} of {questions.length}</p>
+                            <h2 className="text-lg md:text-xl font-semibold mb-1">{examData?.title}</h2>
+                            <p className="opacity-90 text-sm md:text-base">Question {currentQuestion + 1} of {questions.length}</p>
                         </div>
                         <div className="text-right">
-                            <div className="text-sm opacity-90">Progress</div>
-                            <div className="text-lg font-semibold">{Math.round(((currentQuestion + 1) / questions.length) * 100)}%</div>
+                            <div className="text-xs md:text-sm opacity-90">Progress</div>
+                            <div className="text-base md:text-lg font-semibold">{Math.round(((currentQuestion + 1) / questions.length) * 100)}%</div>
                         </div>
                     </div>
-                    <div className="mt-4 w-full bg-white bg-opacity-20 rounded-full h-2">
+                    <div className="mt-3 md:mt-4 w-full bg-white bg-opacity-20 rounded-full h-2">
                         <div
                             className="bg-white h-2 rounded-full transition-all duration-300"
                             style={{ width: `${((currentQuestion + 1) / questions.length) * 100}%` }}
@@ -488,19 +489,19 @@ const Examinations = ({ user, userData, onExamCompleted }) => {
 
                     <div className="divide-y divide-gray-200">
                         {categoryExams.map((exam) => (
-                            <div key={exam.id} className="p-6 hover:bg-gray-50 transition-colors">
-                                <div className="flex items-center justify-between">
+                            <div key={exam.id} className="p-4 md:p-6 hover:bg-gray-50 transition-colors">
+                                <div className="flex flex-col space-y-4 md:flex-row md:items-center md:justify-between md:space-y-0">
                                     <div className="flex-1">
-                                        <div className="flex items-center space-x-3 mb-2">
+                                        <div className="flex flex-col space-y-2 md:flex-row md:items-center md:space-x-3 md:space-y-0 mb-2">
                                             <h4 className="text-lg font-semibold text-gray-900">{exam.title}</h4>
-                                            <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getDifficultyColor(exam.difficulty)}`}>
+                                            <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium self-start ${getDifficultyColor(exam.difficulty)}`}>
                                                 {exam.difficulty}
                                             </span>
                                         </div>
 
                                         <p className="text-gray-600 mb-3">{exam.description}</p>
 
-                                        <div className="flex items-center space-x-6 text-sm text-gray-500">
+                                        <div className="flex flex-col space-y-2 md:flex-row md:items-center md:space-x-6 md:space-y-0 text-sm text-gray-500">
                                             <div className="flex items-center space-x-1">
                                                 <Clock className="w-4 h-4" />
                                                 <span>{exam.duration} minutes</span>
@@ -512,10 +513,10 @@ const Examinations = ({ user, userData, onExamCompleted }) => {
                                         </div>
                                     </div>
 
-                                    <div className="ml-6">
+                                    <div className="md:ml-6">
                                         <button
                                             onClick={() => setSelectedExam(exam.id)}
-                                            className={`inline-flex items-center px-6 py-2 ${category.textColor} border-2 border-current rounded-lg hover:bg-current hover:text-white transition-colors font-medium`}
+                                            className={`w-full md:w-auto inline-flex items-center justify-center px-6 py-3 ${category.textColor} border-2 border-current rounded-lg hover:bg-current hover:text-white transition-colors font-medium`}
                                         >
                                             Start Exam
                                             <Play className="w-4 h-4 ml-1" />
