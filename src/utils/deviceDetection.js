@@ -57,32 +57,28 @@ export const getDeviceInfo = () => {
 
 export const getIPAddress = async () => {
     try {
-        const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 5000); // 5 second timeout
-
         const response = await fetch('https://api.ipify.org?format=json', {
-            signal: controller.signal
+            timeout: 5000
         });
-        clearTimeout(timeoutId);
 
-        if (!response.ok) throw new Error('IP fetch failed');
+        if (!response.ok) throw new Error('Primary IP service failed');
 
         const data = await response.json();
-        console.log('Fetched IP:', data.ip);
-        return data.ip;
+        return data.ip?.trim() || null;
     } catch (error) {
-        console.error('Error fetching IP address:', error);
+        // Fallback to secondary service
         try {
-            const response = await fetch('https://ipapi.co/ip/');
-            if (!response.ok) throw new Error('Fallback IP fetch failed');
+            const response = await fetch('https://ipapi.co/ip/', {
+                timeout: 5000
+            });
+
+            if (!response.ok) throw new Error('Fallback IP service failed');
 
             const ip = await response.text();
-            const trimmedIP = ip.trim();
-            console.log('Fallback IP:', trimmedIP);
-            return trimmedIP;
+            return ip?.trim() || null;
         } catch (fallbackError) {
-            console.error('Both IP fetch methods failed:', fallbackError);
-            return null; // Return null instead of throwing
+            // Final fallback - return null, let the system handle gracefully
+            return null;
         }
     }
 };
