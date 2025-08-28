@@ -63,7 +63,8 @@ const AdminDashboard = ({ user }) => {
                     id: doc.id,
                     ...doc.data(),
                     createdAt: doc.data().createdAt?.toDate() || new Date(),
-                    lastLogin: doc.data().lastLogin?.toDate() || null
+                    lastLogin: doc.data().lastLogin?.toDate() || null,
+                    registeredAt: doc.data().registeredAt?.toDate() || null  // Add this line
                 }));
                 setUsers(usersList);
             } catch (error) {
@@ -135,11 +136,11 @@ const AdminDashboard = ({ user }) => {
             // Store current user
             const currentUser = auth.currentUser;
 
-            // Create Firebase Authentication account
+            // Firebase Authentication account
             const userCredential = await createUserWithEmailAndPassword(auth, newUser.email, newUser.password);
             const firebaseUser = userCredential.user;
 
-            // Create user document in Firestore
+            // user document in Firestore
             const userDoc = {
                 email: newUser.email,
                 displayName: newUser.displayName,
@@ -147,7 +148,13 @@ const AdminDashboard = ({ user }) => {
                 isActive: true,
                 createdAt: serverTimestamp(),
                 lastLogin: null,
-                uid: firebaseUser.uid
+                uid: firebaseUser.uid,
+                // Initialize device fields as null - will be set on first login
+                registeredIP: null,
+                registeredDevice: null,
+                registeredAt: null,
+                lastLoginIP: null,
+                lastLoginDevice: null
             };
 
             // Use the Firebase Auth UID as the document ID
@@ -246,44 +253,44 @@ const AdminDashboard = ({ user }) => {
                 </div>
             ) : (
                 <>
-                    {/* Stats Cards */}
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                        <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
+                    {/* Stats Cards - Improved mobile layout */}
+                    <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+                        <div className="bg-blue-50 p-3 sm:p-4 rounded-lg border border-blue-200">
                             <div className="flex items-center space-x-2">
-                                <Users className="w-5 h-5 text-blue-600" />
-                                <span className="text-sm font-medium text-blue-600">Total Users</span>
+                                <Users className="w-4 h-4 sm:w-5 sm:h-5 text-blue-600" />
+                                <span className="text-xs sm:text-sm font-medium text-blue-600">Total</span>
                             </div>
-                            <p className="text-2xl font-bold text-blue-800 mt-1">{stats.totalUsers}</p>
+                            <p className="text-xl sm:text-2xl font-bold text-blue-800 mt-1">{stats.totalUsers}</p>
                         </div>
 
-                        <div className="bg-green-50 p-4 rounded-lg border border-green-200">
+                        <div className="bg-green-50 p-3 sm:p-4 rounded-lg border border-green-200">
                             <div className="flex items-center space-x-2">
-                                <UserCheck className="w-5 h-5 text-green-600" />
-                                <span className="text-sm font-medium text-green-600">Active</span>
+                                <UserCheck className="w-4 h-4 sm:w-5 sm:h-5 text-green-600" />
+                                <span className="text-xs sm:text-sm font-medium text-green-600">Active</span>
                             </div>
-                            <p className="text-2xl font-bold text-green-800 mt-1">{stats.activeUsers}</p>
+                            <p className="text-xl sm:text-2xl font-bold text-green-800 mt-1">{stats.activeUsers}</p>
                         </div>
 
-                        <div className="bg-red-50 p-4 rounded-lg border border-red-200">
+                        <div className="bg-red-50 p-3 sm:p-4 rounded-lg border border-red-200">
                             <div className="flex items-center space-x-2">
-                                <UserX className="w-5 h-5 text-red-600" />
-                                <span className="text-sm font-medium text-red-600">Inactive</span>
+                                <UserX className="w-4 h-4 sm:w-5 sm:h-5 text-red-600" />
+                                <span className="text-xs sm:text-sm font-medium text-red-600">Inactive</span>
                             </div>
-                            <p className="text-2xl font-bold text-red-800 mt-1">{stats.inactiveUsers}</p>
+                            <p className="text-xl sm:text-2xl font-bold text-red-800 mt-1">{stats.inactiveUsers}</p>
                         </div>
 
-                        <div className="bg-purple-50 p-4 rounded-lg border border-purple-200">
+                        <div className="bg-purple-50 p-3 sm:p-4 rounded-lg border border-purple-200">
                             <div className="flex items-center space-x-2">
-                                <Activity className="w-5 h-5 text-purple-600" />
-                                <span className="text-sm font-medium text-purple-600">Recent</span>
+                                <Activity className="w-4 h-4 sm:w-5 sm:h-5 text-purple-600" />
+                                <span className="text-xs sm:text-sm font-medium text-purple-600">Recent</span>
                             </div>
-                            <p className="text-2xl font-bold text-purple-800 mt-1">{stats.recentLogins}</p>
+                            <p className="text-xl sm:text-2xl font-bold text-purple-800 mt-1">{stats.recentLogins}</p>
                         </div>
                     </div>
 
-                    {/* Controls */}
-                    <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
-                        <div className="relative flex-1 max-w-md">
+                    {/* Controls - Improved mobile stacking */}
+                    <div className="flex flex-col space-y-3 sm:space-y-0 sm:flex-row sm:gap-4 sm:items-center sm:justify-between">
+                        <div className="relative flex-1 max-w-full sm:max-w-md">
                             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
                             <input
                                 type="text"
@@ -296,26 +303,110 @@ const AdminDashboard = ({ user }) => {
 
                         <button
                             onClick={() => setShowAddUser(true)}
-                            className="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium"
+                            className="flex items-center justify-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium w-full sm:w-auto"
                         >
                             <Plus className="w-4 h-4" />
                             <span>Add User</span>
                         </button>
                     </div>
 
-                    {/* Users Table */}
+                    {/* Users Table - Mobile card view for small screens */}
                     <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
-                        <div className="overflow-x-auto">
+                        {/* Mobile Card View - Show on screens smaller than md */}
+                        <div className="block md:hidden">
+                            <div className="divide-y divide-gray-200">
+                                {filteredUsers.map((user) => (
+                                    <div key={user.id} className="p-4 space-y-3">
+                                        <div className="flex items-start justify-between">
+                                            <div className="flex-1 min-w-0">
+                                                <div className="text-sm font-medium text-gray-900 truncate">{user.displayName}</div>
+                                                <div className="text-sm text-gray-500 truncate">{user.email}</div>
+                                                <div className="text-xs text-gray-400">{user.role}</div>
+                                            </div>
+                                            <div className="ml-2 flex-shrink-0">
+                                                <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${user.isActive
+                                                    ? 'bg-green-100 text-green-800'
+                                                    : 'bg-red-100 text-red-800'
+                                                    }`}>
+                                                    {user.isActive ? 'Active' : 'Inactive'}
+                                                </span>
+                                            </div>
+                                        </div>
+
+                                        <div className="grid grid-cols-1 gap-2 text-xs text-gray-500">
+                                            <div><strong>Created:</strong> {user.createdAt.toLocaleDateString()}</div>
+                                            <div>
+                                                <strong>Last Login:</strong>{' '}
+                                                {user.lastLogin ? (
+                                                    <span>
+                                                        {user.lastLogin.toLocaleDateString()}
+                                                        {user.lastLoginIP && (
+                                                            <span className="text-gray-400"> (IP: {user.lastLoginIP})</span>
+                                                        )}
+                                                    </span>
+                                                ) : (
+                                                    'Never'
+                                                )}
+                                            </div>
+                                            {user.registeredIP && user.registeredDevice ? (
+                                                <div>
+                                                    <strong>Registered:</strong> {user.registeredDevice.browser} on {user.registeredDevice.os}, IP: {user.registeredIP}
+                                                    {user.registeredAt && (
+                                                        <span className="text-gray-400"> on {user.registeredAt.toLocaleDateString()}</span>
+                                                    )}
+                                                </div>
+                                            ) : (
+                                                <div><strong>Device:</strong> <span className="italic">Not registered yet</span></div>
+                                            )}
+                                        </div>
+
+                                        <div className="flex items-center justify-end space-x-3 pt-2 border-t border-gray-100">
+                                            <button
+                                                onClick={() => handleToggleUserStatus(user.id, user.isActive)}
+                                                className="flex items-center space-x-1 px-3 py-1 text-xs font-medium rounded-md border transition-colors"
+                                                title={user.isActive ? 'Deactivate user' : 'Activate user'}
+                                            >
+                                                {user.isActive ? (
+                                                    <>
+                                                        <EyeOff className="w-3 h-3" />
+                                                        <span>Deactivate</span>
+                                                    </>
+                                                ) : (
+                                                    <>
+                                                        <Eye className="w-3 h-3" />
+                                                        <span>Activate</span>
+                                                    </>
+                                                )}
+                                            </button>
+                                            <button
+                                                onClick={() => handleDeleteUser(user.id)}
+                                                className="flex items-center space-x-1 px-3 py-1 text-xs font-medium text-red-600 bg-red-50 border border-red-200 rounded-md hover:bg-red-100 transition-colors"
+                                                title="Delete user"
+                                            >
+                                                <Trash2 className="w-3 h-3" />
+                                                <span>Delete</span>
+                                            </button>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+
+                        {/* Desktop Table View - Show on md screens and larger */}
+                        <div className="hidden md:block overflow-x-auto">
                             <table className="w-full">
                                 <thead className="bg-gray-50 border-b border-gray-200">
                                     <tr>
                                         <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                             User
                                         </th>
-                                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden md:table-cell">
+                                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden xl:table-cell">
+                                            Registered Device/IP
+                                        </th>
+                                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden lg:table-cell">
                                             Created
                                         </th>
-                                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden sm:table-cell">
+                                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                             Last Login
                                         </th>
                                         <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -333,13 +424,41 @@ const AdminDashboard = ({ user }) => {
                                                 <div>
                                                     <div className="text-sm font-medium text-gray-900">{user.displayName}</div>
                                                     <div className="text-sm text-gray-500">{user.email}</div>
+                                                    <div className="text-xs text-gray-400">{user.role}</div>
                                                 </div>
                                             </td>
-                                            <td className="px-4 py-3 text-sm text-gray-500 hidden md:table-cell">
+                                            <td className="px-4 py-3 text-xs text-gray-500 hidden xl:table-cell">
+                                                {user.registeredIP && user.registeredDevice ? (
+                                                    <div className="space-y-1">
+                                                        <div><strong>IP:</strong> {user.registeredIP}</div>
+                                                        <div><strong>Device:</strong> {user.registeredDevice.browser} on {user.registeredDevice.os}</div>
+                                                        <div><strong>Type:</strong> {user.registeredDevice.deviceType}</div>
+                                                        {user.registeredAt && (
+                                                            <div className="text-gray-400">
+                                                                <strong>Registered:</strong> {user.registeredAt.toLocaleDateString()}
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                ) : (
+                                                    <span className="text-gray-400 italic">Not registered yet</span>
+                                                )}
+                                            </td>
+                                            <td className="px-4 py-3 text-sm text-gray-500 hidden lg:table-cell">
                                                 {user.createdAt.toLocaleDateString()}
                                             </td>
-                                            <td className="px-4 py-3 text-sm text-gray-500 hidden sm:table-cell">
-                                                {user.lastLogin ? user.lastLogin.toLocaleDateString() : 'Never'}
+                                            <td className="px-4 py-3 text-sm text-gray-500">
+                                                {user.lastLogin ? (
+                                                    <div>
+                                                        <div>{user.lastLogin.toLocaleDateString()}</div>
+                                                        {user.lastLoginIP && (
+                                                            <div className="text-xs text-gray-400">
+                                                                IP: {user.lastLoginIP}
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                ) : (
+                                                    'Never'
+                                                )}
                                             </td>
                                             <td className="px-4 py-3">
                                                 <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${user.isActive
@@ -379,10 +498,10 @@ const AdminDashboard = ({ user }) => {
                 </>
             )}
 
-            {/* User Modal */}
+            {/* User Modal - Improved mobile responsiveness */}
             {showAddUser && (
                 <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-                    <div className="bg-white rounded-lg p-6 w-full max-w-md">
+                    <div className="bg-white rounded-lg p-4 sm:p-6 w-full max-w-md max-h-[90vh] overflow-y-auto">
                         <h3 className="text-lg font-semibold mb-4">Add New User</h3>
 
                         {error && (
@@ -401,7 +520,7 @@ const AdminDashboard = ({ user }) => {
                                     value={newUser.email}
                                     onChange={(e) => setNewUser({ ...newUser, email: e.target.value })}
                                     disabled={addUserLoading}
-                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:bg-gray-100 disabled:cursor-not-allowed"
+                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:bg-gray-100 disabled:cursor-not-allowed text-sm"
                                     placeholder="user@example.com"
                                 />
                             </div>
@@ -415,7 +534,7 @@ const AdminDashboard = ({ user }) => {
                                     value={newUser.displayName}
                                     onChange={(e) => setNewUser({ ...newUser, displayName: e.target.value })}
                                     disabled={addUserLoading}
-                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:bg-gray-100 disabled:cursor-not-allowed"
+                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:bg-gray-100 disabled:cursor-not-allowed text-sm"
                                     placeholder="John Doe"
                                 />
                             </div>
@@ -429,7 +548,7 @@ const AdminDashboard = ({ user }) => {
                                     value={newUser.password}
                                     onChange={(e) => setNewUser({ ...newUser, password: e.target.value })}
                                     disabled={addUserLoading}
-                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:bg-gray-100 disabled:cursor-not-allowed"
+                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:bg-gray-100 disabled:cursor-not-allowed text-sm"
                                     placeholder="Minimum 6 characters"
                                 />
                                 <p className="text-xs text-gray-500 mt-1">Password must be at least 6 characters long</p>
@@ -441,7 +560,7 @@ const AdminDashboard = ({ user }) => {
                                     value={newUser.role}
                                     onChange={(e) => setNewUser({ ...newUser, role: e.target.value })}
                                     disabled={addUserLoading}
-                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:bg-gray-100 disabled:cursor-not-allowed"
+                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:bg-gray-100 disabled:cursor-not-allowed text-sm"
                                 >
                                     <option value="user">User</option>
                                     <option value="admin">Admin</option>
@@ -449,7 +568,7 @@ const AdminDashboard = ({ user }) => {
                             </div>
                         </div>
 
-                        <div className="flex justify-end space-x-3 mt-6">
+                        <div className="flex flex-col-reverse sm:flex-row sm:justify-end space-y-reverse space-y-3 sm:space-y-0 sm:space-x-3 mt-6">
                             <button
                                 onClick={() => {
                                     setShowAddUser(false);
@@ -457,14 +576,14 @@ const AdminDashboard = ({ user }) => {
                                     setNewUser({ email: '', displayName: '', password: '', role: 'user' });
                                 }}
                                 disabled={addUserLoading}
-                                className="px-4 py-2 text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                                className="w-full sm:w-auto px-4 py-2 text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-sm"
                             >
                                 Cancel
                             </button>
                             <button
                                 onClick={handleAddUser}
                                 disabled={addUserLoading}
-                                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center space-x-2"
+                                className="w-full sm:w-auto px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2 text-sm"
                             >
                                 {addUserLoading ? (
                                     <>
