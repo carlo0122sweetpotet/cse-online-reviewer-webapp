@@ -3,6 +3,7 @@ import { Eye, EyeOff, Lock, Mail, User } from 'lucide-react';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import { auth, db } from '../firebase';
 import { doc, getDoc, updateDoc, serverTimestamp } from 'firebase/firestore';
+import { getDeviceInfo, getIPAddress } from '../utils/deviceDetection';
 
 const UserLogin = () => {
     const [email, setEmail] = useState('');
@@ -12,6 +13,8 @@ const UserLogin = () => {
     const [error, setError] = useState('');
     const [showInactiveModal, setShowInactiveModal] = useState(false);
     const [rememberMe, setRememberMe] = useState(false);
+    const [showDeviceMismatchModal, setShowDeviceMismatchModal] = useState(false);
+    const [deviceMismatchInfo, setDeviceMismatchInfo] = useState(null);
 
     useEffect(() => {
         const savedEmail = localStorage.getItem('rememberedEmail');
@@ -33,6 +36,10 @@ const UserLogin = () => {
         setError('');
 
         try {
+            // Get current device info and IP
+            const currentDeviceInfo = getDeviceInfo();
+            const currentIP = await getIPAddress();
+
             // Save or remove email based on remember me checkbox
             if (rememberMe) {
                 localStorage.setItem('rememberedEmail', email);
@@ -41,6 +48,9 @@ const UserLogin = () => {
                 localStorage.removeItem('rememberedEmail');
                 localStorage.removeItem('rememberMe');
             }
+
+            console.log('Current IP:', currentIP);
+            console.log('Current Device:', currentDeviceInfo.deviceFingerprint);
 
             // Firebase authentication
             const userCredential = await signInWithEmailAndPassword(auth, email, password);
@@ -59,17 +69,56 @@ const UserLogin = () => {
 
             // Check if user is active
             if (!userData.isActive) {
-                // Sign out the user immediately
                 await auth.signOut();
-
-                // Show custom modal instead of alert
                 setShowInactiveModal(true);
                 return;
             }
 
-            // Update last login timestamp
+            // Check device and IP for existing users (not first-time login)
+            if (userData.registeredIP && userData.registeredDevice) {
+                console.log('Registered IP:', userData.registeredIP);
+                console.log('Registered Device:', userData.registeredDevice.deviceFingerprint);
+
+                // Better IP comparison (handle null cases)
+                const isIPDifferent = currentIP && userData.registeredIP &&
+                    userData.registeredIP !== currentIP;
+
+                // Better device comparison
+                const isDeviceDifferent = userData.registeredDevice.deviceFingerprint !==
+                    currentDeviceInfo.deviceFingerprint;
+
+                console.log('IP Different:', isIPDifferent);
+                console.log('Device Different:', isDeviceDifferent);
+
+                if (isIPDifferent || isDeviceDifferent) {
+                    console.log('BLOCKING LOGIN - Device/IP mismatch detected');
+
+                    // Sign out the user immediately
+                    await auth.signOut();
+
+                    setDeviceMismatchInfo({
+                        currentIP,
+                        currentDevice: currentDeviceInfo,
+                        registeredIP: userData.registeredIP,
+                        registeredDevice: userData.registeredDevice
+                    });
+                    setShowDeviceMismatchModal(true);
+                    return; // This prevents further execution
+                }
+            } else {
+                // First time login - register the device and IP
+                await updateDoc(doc(db, 'users', user.uid), {
+                    registeredIP: currentIP,
+                    registeredDevice: currentDeviceInfo,
+                    registeredAt: serverTimestamp()
+                });
+            }
+
+            // Update last login timestamp with current device info
             await updateDoc(doc(db, 'users', user.uid), {
-                lastLogin: serverTimestamp()
+                lastLogin: serverTimestamp(),
+                lastLoginIP: currentIP,
+                lastLoginDevice: currentDeviceInfo
             });
 
             console.log('User login successful:', user.email);
@@ -268,6 +317,54 @@ const UserLogin = () => {
                             <button
                                 onClick={handleModalClose}
                                 className="w-full bg-red-600 text-white py-2 px-4 rounded-lg hover:bg-red-700 transition-colors font-medium"
+                            >
+                                OK
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+            {/* Device Mismatch Modal */}
+            {showDeviceMismatchModal && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+                    <div className="bg-white rounded-2xl p-6 w-full max-w-lg shadow-2xl">
+                        <div className="text-center">
+                            <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-yellow-100 mb-4">
+                                <svg className="h-6 w-6 text-yellow-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.732-.833-2.5 0L3.314 16.5c-.77.833.192 2.5 1.732 2.5z" />
+                                </svg>
+                            </div>
+                            <h3 className="text-lg font-semibold text-gray-900 mb-2">Device/Location Mismatch Detected</h3>
+                            <div className="text-left text-sm text-gray-600 mb-6 space-y-3">
+                                <p className="text-center">
+                                    This account is registered to a different device or IP address. For security reasons, access is restricted.
+                                </p>
+
+                                <div className="bg-gray-50 p-3 rounded-lg">
+                                    <h4 className="font-medium text-gray-800 mb-2">Registered Information:</h4>
+                                    <p><strong>IP:</strong> {deviceMismatchInfo?.registeredIP}</p>
+                                    <p><strong>Device:</strong> {deviceMismatchInfo?.registeredDevice?.deviceFingerprint}</p>
+                                </div>
+
+                                <div className="bg-red-50 p-3 rounded-lg">
+                                    <h4 className="font-medium text-red-800 mb-2">Current Attempt:</h4>
+                                    <p><strong>IP:</strong> {deviceMismatchInfo?.currentIP}</p>
+                                    <p><strong>Device:</strong> {deviceMismatchInfo?.currentDevice?.deviceFingerprint}</p>
+                                </div>
+
+                                <p className="text-center font-medium text-gray-700">
+                                    Please contact your administrator for assistance.
+                                </p>
+                            </div>
+                            <button
+                                onClick={() => {
+                                    setShowDeviceMismatchModal(false);
+                                    setDeviceMismatchInfo(null);
+                                    setEmail('');
+                                    setPassword('');
+                                    setError('');
+                                }}
+                                className="w-full bg-yellow-600 text-white py-2 px-4 rounded-lg hover:bg-yellow-700 transition-colors font-medium"
                             >
                                 OK
                             </button>
