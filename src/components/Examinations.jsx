@@ -92,7 +92,7 @@ const Examinations = ({ user, userData, onExamCompleted }) => {
                             title: 'Logical Reasoning Test',
                             description: 'Pattern recognition and logical sequences',
                             duration: 'unlimited',
-                            questions: 3,
+                            questions: 17,
                             difficulty: 'Professional Level'
                         },
                         {
@@ -630,5 +630,6 @@ const Examinations = ({ user, userData, onExamCompleted }) => {
         </div>
     );
 };
+
 
 export default Examinations;
